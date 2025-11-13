@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    form {
+      background-color: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 300px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="email"] {
+      width: 100%;
+      padding: 8px;
+      margin: 8px 0 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    input[type="submit"] {
+      width: 100%;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <form action="/submit-form" method="POST">
+    <h2>Enter Your Details</h2>
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="userName" required />
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="userEmail" required />
+
+    <input type="submit" value="Submit" />
+  </form>
+</body>
+</html>
+
+const express = require('express');
+const app = express();
+const port = 3000;
+
+// Middleware to parse URL-encoded bodies (for form data)
+app.use(express.urlencoded({ extended: true }));
+
+// Serve static files from the "public" folder
+app.use(express.static('public'));
+
+// Handle POST request from the form
+app.post('/submit-form', (req, res) => {
+  const { userName, userEmail } = req.body; // Access submitted data
+
+  // Log data in the backend terminal
+
+  console.log('Received form data:');
+  console.log('Name:', userName);
+  console.log('Email:', userEmail);
+
+
+  // Send response back to frontend
+  res.send(`
+    <h2>Thank you, ${userName}!</h2>
+    <p>Your email (${userEmail}) has been received.</p>
+    <a href="/">Go back</a>
+  `);
+});
+
+// Start server
+app.listen(port, () => {
+  console.log(`✅ Server running at http://localhost:${port}`);
+});
+
+
+
