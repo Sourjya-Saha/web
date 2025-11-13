@@ -1,0 +1,81 @@
+// Callback.js
+var utils = require("./functions");
+var fs = require("fs");
+
+fs.readFile("employees.json", function(err, data) {
+  if (err) {
+    throw err;
+  }
+  var file1 = JSON.parse(data);
+  fs.readFile("bonuses.json", function(err, data) {
+    if (err) {
+      throw err;
+    }
+    var file2 = JSON.parse(data);
+    var bonusedemployees = utils.getBonusedEmployees(file1, file2);
+    var outdata = JSON.stringify(bonusedemployees);
+    fs.writeFile('bonusedEmployees.json', outdata, function(err) {
+      if (err) throw err;
+      console.log('Data written to file');
+      var logdata = [];
+      bonusedemployees.forEach(function(item) {
+        logdata.push({ fullname: item["fullname"], newsalary: item["salary"] });
+      });
+      fs.writeFile('log.txt', JSON.stringify(logdata), function(err) {
+        if (err) throw err;
+        console.log('Log Data written to file');
+      });
+    });
+  });
+});
+
+
+
+// Promise.js
+var utils = require("./functions");
+var Promise = require("bluebird");
+var fs = Promise.promisifyAll(require("fs"));
+
+var file1 = fs.readFileAsync("employees.json");
+var file2 = fs.readFileAsync("bonuses.json");
+var bonusedemployees;
+
+Promise.all([file1, file2]).spread(function(file1, file2) {
+  file1 = JSON.parse(file1);
+  file2 = JSON.parse(file2);
+  bonusedemployees = utils.getBonusedEmployees(file1, file2);
+  var logdata = JSON.stringify(bonusedemployees);
+  console.log(logdata);
+  var file3 = fs.writeFileAsync("bonusedEmployees.json", logdata);
+  var file4 = fs.writeFileAsync("log.txt", logdata);
+  Promise.all([file3, file4]).spread(function() {
+    console.log("Data Write Complete");
+  });
+});
+
+
+
+// Function.js
+var getBonusedEmployees = function(employees, bonus) {
+  var bonusemployee = [];
+  employees.forEach(function(item) {
+    Object.keys(item).forEach(function(key1) {
+      if (key1 === "id") {
+        Object.keys(bonus).forEach(function(key2) {
+          if (item[key1] === key2 && bonus[key2]) {
+            bonusemployee.push({
+              id: item["id"],
+              fullname: item["name"],
+              salary: (item["salary"] + item["yearsWorking"] * 1000)
+            });
+          }
+        });
+      }
+    });
+  });
+  return bonusemployee;
+}
+
+module.exports = {
+  getBonusedEmployees: getBonusedEmployees
+};
