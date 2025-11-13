@@ -1,0 +1,113 @@
+const fs = require('fs');
+const path = require('path');
+const EMPLOYEES_FILE = path.join(__dirname, 'employees.json');
+const BONUSES_FILE = path.join(__dirname, 'bonuses.json');
+function readJSONFile(filePath) {
+    try {
+        const data = fs.readFileSync(filePath, 'utf8');
+        return JSON.parse(data);
+    } catch (error) {
+        console.error(`Error reading file ${filePath}:`, error.message);
+        throw error;
+    }
+}
+function writeJSONFile(filePath, data) {
+    try {
+        fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+        console.log(`Successfully updated ${filePath}`);
+    } catch (error) {
+        console.error(`Error writing file ${filePath}:`, error.message);
+        throw error;
+    }
+}
+function processBonuses(employees, bonuses) {
+    const updatedEmployees = employees.map(employee => {
+        const employeeId = employee.id;
+               
+        if (bonuses.hasOwnProperty(employeeId)) {
+            const updatedEmployee = { ...employee };
+           
+            if (bonuses[employeeId] === true) {
+               
+                updatedEmployee.salary += 10000;
+                console.log(`Applied $10,000 bonus to ${employee.name.first} ${employee.name.last} (ID: ${employeeId})`);
+            } else if (bonuses[employeeId] === false) {
+              
+                updatedEmployee.salary += 1000;
+                console.log(`Applied $1,000 bonus to ${employee.name.first} ${employee.name.last} (ID: ${employeeId})`);
+            }
+           
+            return updatedEmployee;
+        }
+       
+      
+        return employee;
+    });
+   
+    return updatedEmployees;
+}
+function getBonusedEmployees(employees, bonuses) {
+    const bonusedEmployees = [];
+   
+    employees.forEach(employee => {
+        const employeeId = employee.id;
+       
+        if (bonuses.hasOwnProperty(employeeId) && bonuses[employeeId] === true) {
+            bonusedEmployees.push({
+                id: employee.id,
+                fullname: `${employee.name.first} ${employee.name.last}`,
+                yearsWorking: employee.yearsWorking,
+                originalSalary: employee.salary - 10000, 
+                newSalary: employee.salary,
+                bonusAmount: 10000
+            });
+        }
+    });
+   
+    return bonusedEmployees;
+}
+function main() {
+    console.log('=== Bonus Processing Script ===\n');
+   
+   
+    console.log('Reading files...');
+    const employees = readJSONFile(EMPLOYEES_FILE);
+    const bonuses = readJSONFile(BONUSES_FILE);
+   
+    console.log(`Loaded ${employees.length} employees`);
+    console.log(`Loaded ${Object.keys(bonuses).length} bonus entries\n`);
+   
+  
+    console.log('Processing bonuses...\n');
+    const updatedEmployees = processBonuses(employees, bonuses);
+   
+   
+    console.log('\nWriting updated employee data...');
+    writeJSONFile(EMPLOYEES_FILE, updatedEmployees);
+   
+
+    console.log('\n=== Bonus Summary ===');
+    const trueCount = Object.values(bonuses).filter(v => v === true).length;
+    const falseCount = Object.values(bonuses).filter(v => v === false).length;
+   
+    console.log(`Employees with $10,000 bonus: ${trueCount}`);
+    console.log(`Employees with $1,000 bonus: ${falseCount}`);
+    console.log(`Total bonus amount: $${(trueCount * 10000 + falseCount * 1000).toLocaleString()}`);
+
+    const bonusedList = getBonusedEmployees(updatedEmployees, bonuses);
+    console.log(`\nEmployees who received major bonus (true):`);
+    bonusedList.forEach(emp => {
+        console.log(`  - ${emp.fullname}: $${emp.originalSalary.toLocaleString()} → $${emp.newSalary.toLocaleString()}`);
+    });
+   
+    console.log('\n=== Process Complete ===');
+}
+module.exports = {
+    getBonusedEmployees,
+    processBonuses,
+    readJSONFile,
+    writeJSONFile
+};
+if (require.main === module) {
+    main();
+}
