@@ -39,3 +39,41 @@ const server = http.createServer((req, res) => {
 server.listen(3000, () => {
   console.log("Server running at http://localhost:3000/");
 });
+
+
+
+
+
+//same
+
+ const http = require("http");
+const url = require("url");
+const fs = require("fs");
+
+http.createServer((req, res) => {
+  const q = url.parse(req.url, true);
+
+  if (q.pathname === "/cal/") {
+    const num1 = parseFloat(q.query.num1);
+    const num2 = parseFloat(q.query.num2);
+    const op = q.query.op;
+
+    if (isNaN(num1) || isNaN(num2) || !op) {
+      return res.end("Use /cal/?num1=&num2=&op=");
+    }
+
+    let result =
+      op === "add" ? num1 + num2 :
+      op === "sub" ? num1 - num2 :
+      op === "mul" ? num1 * num2 :
+      op === "div" ? num1 / num2 :
+      "Invalid op";
+
+    fs.appendFileSync("results.txt", result + "\n");
+    return res.end("Result: " + result);
+  }
+
+  res.end("Use /cal/?num1=&num2=&op=");
+}).listen(3000);
+
+
