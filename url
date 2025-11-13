@@ -1,50 +1,41 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Simple Calculator</title>
-  <meta charset="UTF-8">
-</head>
-<body>
-  <h2>Simple Calculator</h2>
-  <p>Use the URL like this:</p>
-  <pre>?num1=10&num2=5&op=add</pre>
+const http = require("http");
+const url = require("url");
+const fs = require("fs");
 
-  <h3 id="result"></h3>
+const server = http.createServer((req, res) => {
+  const parsedUrl = url.parse(req.url, true);
 
-  <script>
-    // Parse URL parameters
-    const params = new URLSearchParams(window.location.search);
-    const num1 = parseFloat(params.get("num1"));
-    const num2 = parseFloat(params.get("num2"));
-    const op = params.get("op");
+  if (parsedUrl.pathname === "/cal/") {
+    const num1 = parseFloat(parsedUrl.query.num1);
+    const num2 = parseFloat(parsedUrl.query.num2);
+    const op = parsedUrl.query.op;
+
+    if (isNaN(num1) || isNaN(num2) || !op) {
+      res.writeHead(400, { "Content-Type": "text/plain" });
+      return res.end("Use: /cal/?num1=10&num2=5&op=add");
+    }
 
     let result;
 
-    if (!isNaN(num1) && !isNaN(num2) && op) {
-      switch (op.toLowerCase()) {
-        case "add":
-          result = num1 + num2;
-          break;
-        case "sub":
-          result = num1 - num2;
-          break;
-        case "mul":
-          result = num1 * num2;
-          break;
-        case "div":
-          result = num2 !== 0 ? num1 / num2 : "Error: Division by zero";
-          break;
-        default:
-          result = "Invalid operation. Use add, sub, mul, or div.";
-      }
-      document.getElementById("result").textContent = `Result: ${result}`;
-    } else {
-      document.getElementById("result").textContent =
-        "Please provide valid parameters ?num1= &num2= &op=";
+    switch (op.toLowerCase()) {
+      case "add": result = num1 + num2; break;
+      case "sub": result = num1 - num2; break;
+      case "mul": result = num1 * num2; break;
+      case "div": result = num2 !== 0 ? num1 / num2 : "Error: Division by zero"; break;
+      default: result = "Invalid operation. Use add, sub, mul, div.";
     }
-  </script>
-</body>
-</html>
 
+    const logLine = `num1=${num1}, num2=${num2}, op=${op}, result=${result}\n`;
+    fs.appendFileSync("results.txt", logLine);
 
-/calculate?num1=10&num2=5&op=add
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    return res.end(`Result: ${result}`);
+  }
+
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("Calculator running. Use /cal/?num1=&num2=&op=");
+});
+
+server.listen(3000, () => {
+  console.log("Server running at http://localhost:3000/");
+});
