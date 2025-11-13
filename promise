@@ -1,0 +1,353 @@
+"use strict";
+
+var utils = require("./functions");
+
+const {promises: {readFile}} = require("fs");
+
+Promise.all([
+  readFile("employees.json"),
+  readFile("bonuses.json"),
+  ]).then(([employee, bonuses]) => {
+    var file1 = JSON.parse(employee);
+    var file2 = JSON.parse(bonuses);
+    var bonusedemployees = utils.getBonusedEmployees(file1,file2);
+
+    console.log(bonusedemployees);
+}).catch(error => {
+  console.error(error.message);
+  process.exit(1);
+});
+
+
+
+//var utils = require("./functions");
+
+const fs = require('fs');
+
+// Create a Promise-based version of fs.readFile
+function readFilePromise(filePath, encoding = 'utf8') {
+    return new Promise((resolve, reject) => {
+        fs.readFile(filePath, encoding, (err, data) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(data);
+        });
+    });
+}
+
+// Create a Promise-based version of fs.writeFile
+function writeFilePromise(filePath, data, encoding = 'utf8') {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(filePath, data, encoding, (err) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(); // Resolve with no value on success
+        });
+    });
+}
+
+const inputFilePath = 'input.txt';
+const outputFilePath = 'output.txt';
+const contentToWrite = 'This is some content to write to the file.';
+
+// First, write some content to input.txt
+writeFilePromise(inputFilePath, contentToWrite)
+    .then(() => {
+        console.log('Successfully wrote to input.txt');
+        // Then, read the content from input.txt
+        return readFilePromise(inputFilePath);
+    })
+    .then((data) => {
+        console.log('Successfully read from input.txt:', data);
+        const modifiedData = data.toUpperCase(); // Example: Modify the data
+        // Then, write the modified content to output.txt
+        return writeFilePromise(outputFilePath, modifiedData);
+    })
+    .then(() => {
+        console.log('Successfully wrote modified content to output.txt');
+        // Finally, read the content from output.txt to verify
+        return readFilePromise(outputFilePath);
+    })
+    .then((finalData) => {
+        console.log('Content of output.txt:', finalData);
+    })
+    .catch((error) => {
+        console.error('An error occurred:', error);
+    });
+
+
+var utils = require("./functions");
+
+const fs = require('fs');
+
+// Create a Promise-based version of fs.readFile
+function readFilePromise(filePath, encoding = 'utf8') {
+    return new Promise((resolve, reject) => {
+        fs.readFile(filePath, encoding, (err, data) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(data);
+        });
+    });
+}
+
+// Create a Promise-based version of fs.writeFile
+function writeFilePromise(filePath, data, encoding = 'utf8') {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(filePath, data, encoding, (err) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(); // Resolve with no value on success
+        });
+    });
+}
+
+const inputFilePath1 = 'employees.json';
+const inputFilePath2 = 'bonuses.json';
+const outputFilePath1 = 'bonusedEmployees.json';
+const outputFilePath2 = 'log.txt';
+var file1,file2;
+var bonusedemployees;
+var logdata;
+
+// First, write some content to input.txt
+readFilePromise(inputFilePath1)
+    .then((data) => {
+    	file1 = JSON.parse(data);
+        console.log('Successfully read from employees.json:',data);
+        return readFilePromise(inputFilePath2);
+    })
+    .then((data) => {
+    	file2 = JSON.parse(data);
+        console.log('Successfully read from bonuses.json:', data);
+      
+        bonusedemployees = utils.getBonusedEmployees(file1,file2);
+        logdata = JSON.stringify(bonusedemployees);
+        
+        return writeFilePromise(outputFilePath1,logdata);
+    })
+    .then(() => {
+    	return writeFilePromise(outputFilePath2,logdata);
+    })
+    .then(() => {
+        console.log('Content of log.txt:', logdata);
+    })
+    .catch((error) => {
+        console.error('An error occurred:', error);
+    });
+
+//var utils = require("./functions");
+
+const fs = require('fs');
+
+// Create a Promise-based version of fs.readFile
+function readFilePromise(filePath, encoding = 'utf8') {
+    return new Promise((resolve, reject) => {
+        fs.readFile(filePath, encoding, (err, data) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(data);
+        });
+    });
+}
+
+// Create a Promise-based version of fs.writeFile
+function writeFilePromise(filePath, data, encoding = 'utf8') {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(filePath, data, encoding, (err) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(); // Resolve with no value on success
+        });
+    });
+}
+
+const inputFilePath = 'input.txt';
+const outputFilePath = 'output.txt';
+const contentToWrite = 'This is some content to write to the file.';
+
+// First, write some content to input.txt
+writeFilePromise(inputFilePath, contentToWrite)
+    .then(() => {
+        console.log('Successfully wrote to input.txt');
+        // Then, read the content from input.txt
+        return readFilePromise(inputFilePath);
+    })
+    .then((data) => {
+        console.log('Successfully read from input.txt:', data);
+        const modifiedData = data.toUpperCase(); // Example: Modify the data
+        // Then, write the modified content to output.txt
+        return writeFilePromise(outputFilePath, modifiedData);
+    })
+    .then(() => {
+        console.log('Successfully wrote modified content to output.txt');
+        // Finally, read the content from output.txt to verify
+        return readFilePromise(outputFilePath);
+    })
+    .then((finalData) => {
+        console.log('Content of output.txt:', finalData);
+    })
+    .catch((error) => {
+        console.error('An error occurred:', error);
+    });
+
+const fs = require('fs').promises; // Import the promise-based fs module
+
+async function processFile() {
+  const inputFilePath = 'input.txt';
+  const outputFilePath = 'output.txt';
+  const contentToWrite = 'This is new content to write to the file.';
+
+  try {
+    // Write content to a file
+    await fs.writeFile(outputFilePath, contentToWrite, 'utf8');
+    console.log('Successfully wrote to output.txt');
+
+    // Read content from a file
+    const data = await fs.readFile(outputFilePath, 'utf8');
+    console.log('Content of output.txt:', data);
+
+    // You can also chain .then() directly if preferred, though async/await is often cleaner
+    fs.readFile(inputFilePath, 'utf8')
+      .then(inputData => {
+        console.log('Content of input.txt:', inputData);
+        // Process the data and then write it to another file
+        const processedData = inputData.toUpperCase();
+        return fs.writeFile('processed_input.txt', processedData, 'utf8');
+      })
+      .then(() => {
+        console.log('Successfully processed input.txt and wrote to processed_input.txt');
+      })
+      .catch(error => {
+        console.error('Error in chained promise:', error);
+      });
+
+  } catch (error) {
+    console.error('An error occurred:', error);
+  }
+}
+
+// Create a dummy input.txt for the example
+fs.writeFile('input.txt', 'hello world from input file', 'utf8')
+  .then(() => {
+    processFile();
+  })
+  .catch(err => console.error('Error creating input.txt:', err));
+
+const fs = require('fs').promises; // Import the promise-based version of fs
+
+async function processFile(inputFilePath, outputFilePath, contentToAdd) {
+  try {
+    // Read the content of the input file
+    const data = await fs.readFile(inputFilePath, 'utf8');
+    console.log(`Successfully read from ${inputFilePath}:`);
+    console.log(data);
+
+    // Modify the content (e.g., append new content)
+    const modifiedData = data + '\n' + contentToAdd;
+
+    // Write the modified content to the output file
+    await fs.writeFile(outputFilePath, modifiedData, 'utf8');
+    console.log(`Successfully wrote to ${outputFilePath}`);
+
+  } catch (error) {
+    console.error(`An error occurred during file processing: ${error.message}`);
+  }
+}
+
+// Example usage:
+const inputFile = 'input.txt';
+const outputFile = 'output.txt';
+const newContent = 'This is new content appended using Promises!';
+
+// Create a dummy input.txt file for the example
+fs.writeFile(inputFile, 'Initial content of the file.', 'utf8')
+  .then(() => {
+    console.log(`Created ${inputFile} for demonstration.`);
+    // Now, call the function to process the file
+    processFile(inputFile, outputFile, newContent);
+  })
+  .catch(err => console.error(`Error creating ${inputFile}: ${err.message}`));
+
+// Create a new Promise
+const myPromise = new Promise((resolve, reject) => {
+    // Simulate an asynchronous operation (e.g., fetching data, a timeout)
+    setTimeout(() => {
+      const success = false; // Simulate a successful or failed operation
+  
+      if (success) {
+        resolve("Data successfully fetched!"); // Resolve the promise with a value
+      } else {
+        reject("Error: Failed to fetch data."); // Reject the promise with a reason
+      }
+    }, 2000); // Simulate a 2-second delay
+  });
+  
+  // Use .then() to handle the resolved or rejected state
+  myPromise
+    .then((message) => {
+      // This callback runs if the promise is resolved
+      console.log("Success:", message);
+    })
+    .catch((error) => {
+      // This callback runs if the promise is rejected (equivalent to .then(null, rejectedCallback))
+      console.error("Failure:", error);
+    });
+  
+  console.log("Promise initiated..."); // This will log immediately
+
+function readFileAsText(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader);
+    reader.readAsText(file);
+  });
+}
+
+// Assuming 'files' is a FileList object from an input element
+async function readMultipleFiles(files) {
+  const filePromises = Array.from(files).map(file => readFileAsText(file));
+
+  try {
+    const fileContents = await Promise.all(filePromises);
+    // fileContents will be an array containing the text content of each file
+    console.log("Contents of all files:", fileContents);
+    // You can now access individual file contents:
+    // const file1Content = fileContents[0];
+    // const file2Content = fileContents[1];
+  } catch (error) {
+    console.error("Error reading files:", error);
+  }
+}
+
+// Example usage (attach to an input change event)
+document.getElementById('fileInput').addEventListener('change', (event) => {
+  const selectedFiles = event.target.files;
+  readMultipleFiles(selectedFiles);
+});
+
+const fs = require('fs').promises;
+
+async function readTwoFilesNode(filePath1, filePath2) {
+  try {
+    const [content1, content2] = await Promise.all([
+      fs.readFile(filePath1, 'utf8'),
+      fs.readFile(filePath2, 'utf8')
+    ]);
+
+    console.log("Content of file 1:", content1);
+    console.log("Content of file 2:", content2);
+  } catch (error) {
+    console.error("Error reading files:", error);
+  }
+}
+
+// Example usage
+readTwoFilesNode('employees.json', 'bonuses.json');
