@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Calculator</title>
+  <meta charset="UTF-8">
+</head>
+<body>
+  <h2>Simple Calculator</h2>
+  <p>Use the URL like this:</p>
+  <pre>?num1=10&num2=5&op=add</pre>
+
+  <h3 id="result"></h3>
+
+  <script>
+    // Parse URL parameters
+    const params = new URLSearchParams(window.location.search);
+    const num1 = parseFloat(params.get("num1"));
+    const num2 = parseFloat(params.get("num2"));
+    const op = params.get("op");
+
+    let result;
+
+    if (!isNaN(num1) && !isNaN(num2) && op) {
+      switch (op.toLowerCase()) {
+        case "add":
+          result = num1 + num2;
+          break;
+        case "sub":
+          result = num1 - num2;
+          break;
+        case "mul":
+          result = num1 * num2;
+          break;
+        case "div":
+          result = num2 !== 0 ? num1 / num2 : "Error: Division by zero";
+          break;
+        default:
+          result = "Invalid operation. Use add, sub, mul, or div.";
+      }
+      document.getElementById("result").textContent = `Result: ${result}`;
+    } else {
+      document.getElementById("result").textContent =
+        "Please provide valid parameters ?num1= &num2= &op=";
+    }
+  </script>
+</body>
+</html>
+
+
+/calculate?num1=10&num2=5&op=add
